@@ -148,4 +148,9 @@ cyt = exportNetworkToCytoscape(modTOM,
                                nodeNames = modProbes,
                                altNodeNames = modGenes,
                                nodeAttr = moduleColors[inModule]);
+<<<<<<< HEAD
 #### prueba
+=======
+#mmmm
+
+>>>>>>> f4e87a16e8966fb1e0a4c074cf7cffd8e4d7bc8e
