@@ -77,8 +77,9 @@ plot(Sft$fitIndices[,1], Sft$fitIndices[,5],
 text(Sft$fitIndices[,1], Sft$fitIndices[,5], labels=powers, cex=cex1,col="red")
 
 # In the final version add a variable for power a let the user choose
+pwr= 2 #change this variable acording to previus plot
 
-net = blockwiseModules(datExpr, power = 6,
+net = blockwiseModules(datExpr, power = pwr,
                        TOMType = "unsigned", minModuleSize = 5,
                        reassignThreshold = 0, mergeCutHeight = 0.25,
                        numericLabels = TRUE, pamRespectsDendro = FALSE,
@@ -102,9 +103,9 @@ geneTree = net$dendrograms[[1]];
 #Network Visualisation
 # Calculate topological overlap anew: this could be done more efficiently by saving the TOM
 # calculated during module detection, but let us do it again here.
-dissTOM = 1-TOMsimilarityFromExpr(datExpr, power = 6);
+dissTOM = 1-TOMsimilarityFromExpr(datExpr, power = pwr);
 # Transform dissTOM with a power to make moderately strong connections more visible in the heatmap
-plotTOM = dissTOM^7;
+plotTOM = dissTOM^(pwr+1);
 # Set diagonal to NA for a nicer plot
 diag(plotTOM) = NA;
 # Call the plot function
@@ -129,7 +130,8 @@ TOM = TOMsimilarityFromExpr(datExpr, power = 6);
 # Read in the annotation file
 #annot = read.csv(file = "GeneAnnotation.csv");
 # Select modules
-modules = labels2colors(0:( max(net$colors)));
+allmodules = labels2colors(0:( max(net$colors))); # A vector with all colors
+modules = labels2colors(c(1,2)); #The two biggest clusters
 # Select module probes
 probes = names(datExpr)
 inModule = is.finite(match(moduleColors, modules));
@@ -141,10 +143,10 @@ modTOM = TOM[inModule, inModule];
 dimnames(modTOM) = list(modProbes, modProbes)
 # Export the network into edge and node list files Cytoscape can read
 cyt = exportNetworkToCytoscape(modTOM,
-                               edgeFile = paste("CytoscapeInput-edges-", paste(modules, collapse="-"), ".txt", sep=""),
-                               nodeFile = paste("CytoscapeInput-nodes-", paste(modules, collapse="-"), ".txt", sep=""),
+                               edgeFile = paste("CytoscapeInput-edges-", paste(modules, collapse="-"), "TreatAntibiotics.txt", sep=""),
+                               nodeFile = paste("CytoscapeInput-nodes-", paste(modules, collapse="-"), "TreatAntibiotics.txt", sep=""),
                                weighted = TRUE,
-                               threshold = 0.02,
+                               threshold = 0.35,
                                nodeNames = modProbes,
                                altNodeNames = modGenes,
                                nodeAttr = moduleColors[inModule]);
